@@ -6,8 +6,10 @@
 package servlets;
 
 import entity.Computer;
+import entity.History;
 import entity.User;
 import java.io.IOException;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,9 +28,12 @@ import session.UserRolesFacade;
  * @author pupil
  */
 @WebServlet(name = "ManagerServlet", urlPatterns = {
-     "/addPCForm",
+    "/addPCForm",
     "/createComputer",
-    
+    "/changeComputer",
+    "/boughtComputer",
+    "/discountForm",
+    "/setDiscount"
 
 })
 public class ManagerServlet extends HttpServlet {
@@ -76,7 +81,7 @@ public class ManagerServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/addPCForm":
-                request.getRequestDispatcher("/WEB-INF/manager/addPCForm.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("addPCForm")).forward(request, response);
                 break;
             case "/createComputer":
                 String manufacturer = request.getParameter("manufacturer");
@@ -89,14 +94,19 @@ public class ManagerServlet extends HttpServlet {
                 String ssd = request.getParameter("ssd");
                 String power = request.getParameter("power");
                 String price = request.getParameter("price");
-                Computer computer = new Computer(manufacturer, model, procmodel, videocard, ram, soundboard, harddrive, ssd, power, Integer.parseInt(price));
+                String quantity = request.getParameter("quantity");
+                Computer computer = new Computer(manufacturer, model, procmodel, videocard, ram, soundboard, harddrive, ssd, power, Integer.parseInt(price), Integer.parseInt(quantity));
                 computerFacade.create(computer);
                 request.setAttribute("info", "Новый ПК был добавлен");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
+                break;     
+                
+            case "/discountForm":
+                
                 break;
-            
-            
-            
+            case   "/setDiscount":
+                
+                break;
         }
     }
 

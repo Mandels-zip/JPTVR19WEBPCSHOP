@@ -13,14 +13,13 @@
     </head>
     <body>
         <h2>Введите логин и пароль</h2>
-    <p class="info">${info}</p>
     <a href="index.jsp">Главная страница</a>
     <form action="login" method="POST">
-        Логин: <input type="text" name="login">
+        Логин: <input type="text" name="login" id="login" value="${login}">
         <br>
-        Пароль: <input type="password" name="password">
+        Пароль: <input id = "password" type="password" name="password">
         <br>
-        <input type="submit" value="Войти">
+        <input id="btn-submit" class="btn btn-dark" type="submit" value="Войти">
     </form>
     </body>
 </html>

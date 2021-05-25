@@ -10,10 +10,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-/**
- *
- * @author pupil
- */
 @Stateless
 public class RoleFacade extends AbstractFacade<Role> {
      @PersistenceContext(unitName = "JPTVR19WEBPCPU")

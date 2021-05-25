@@ -6,11 +6,13 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
 
 /**
  *
@@ -31,11 +33,15 @@ public class Computer implements Serializable {
     private String ssd;
     private String power;
     private int price;
-
+    private int quantity;
+    private int discount;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date discountDate;
+    private int discountDuration;
     public Computer() {
     }
 
-    public Computer(String manufacturer, String model, String procmodel, String videocard, String ram, String soundboard, String harddrive, String ssd, String power, int price) {
+    public Computer(String manufacturer, String model, String procmodel, String videocard, String ram, String soundboard, String harddrive, String ssd, String power, int price, int quantity) {
         this.manufacturer = manufacturer;
         this.model = model;
         this.procmodel = procmodel;
@@ -46,6 +52,7 @@ public class Computer implements Serializable {
         this.ssd = ssd;
         this.power = power;
         this.price = price;
+        this.quantity = quantity;
     }
 
     public Long getId() {
@@ -136,25 +143,34 @@ public class Computer implements Serializable {
         this.price = price;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
-        return "Computer{" + "id=" + id + ", manufacturer=" + manufacturer + ", model=" + model + ", procmodel=" + procmodel + ", videocard=" + videocard + ", ram=" + ram + ", soundboard=" + soundboard + ", harddrive=" + harddrive + ", ssd=" + ssd + ", power=" + power + ", price=" + price + '}';
+        return "Computer{" + "id=" + id + ", manufacturer=" + manufacturer + ", model=" + model + ", procmodel=" + procmodel + ", videocard=" + videocard + ", ram=" + ram + ", soundboard=" + soundboard + ", harddrive=" + harddrive + ", ssd=" + ssd + ", power=" + power + ", price=" + price + ", quantity=" + quantity + '}';
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 47 * hash + Objects.hashCode(this.id);
-        hash = 47 * hash + Objects.hashCode(this.manufacturer);
-        hash = 47 * hash + Objects.hashCode(this.model);
-        hash = 47 * hash + Objects.hashCode(this.procmodel);
-        hash = 47 * hash + Objects.hashCode(this.videocard);
-        hash = 47 * hash + Objects.hashCode(this.ram);
-        hash = 47 * hash + Objects.hashCode(this.soundboard);
-        hash = 47 * hash + Objects.hashCode(this.harddrive);
-        hash = 47 * hash + Objects.hashCode(this.ssd);
-        hash = 47 * hash + Objects.hashCode(this.power);
-        hash = 47 * hash + this.price;
+        int hash = 3;
+        hash = 43 * hash + Objects.hashCode(this.id);
+        hash = 43 * hash + Objects.hashCode(this.manufacturer);
+        hash = 43 * hash + Objects.hashCode(this.model);
+        hash = 43 * hash + Objects.hashCode(this.procmodel);
+        hash = 43 * hash + Objects.hashCode(this.videocard);
+        hash = 43 * hash + Objects.hashCode(this.ram);
+        hash = 43 * hash + Objects.hashCode(this.soundboard);
+        hash = 43 * hash + Objects.hashCode(this.harddrive);
+        hash = 43 * hash + Objects.hashCode(this.ssd);
+        hash = 43 * hash + Objects.hashCode(this.power);
+        hash = 43 * hash + this.price;
+        hash = 43 * hash + this.quantity;
         return hash;
     }
 
@@ -171,6 +187,9 @@ public class Computer implements Serializable {
         }
         final Computer other = (Computer) obj;
         if (this.price != other.price) {
+            return false;
+        }
+        if (this.quantity != other.quantity) {
             return false;
         }
         if (!Objects.equals(this.manufacturer, other.manufacturer)) {
@@ -205,7 +224,8 @@ public class Computer implements Serializable {
         }
         return true;
     }
-    
+
+   
     
     
     

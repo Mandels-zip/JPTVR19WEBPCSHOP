@@ -1,11 +1,10 @@
-
+package servlets; 
 import entity.Computer;
 import entity.Customer;
 import entity.History;
 import entity.User;
 import java.io.IOException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -25,12 +24,9 @@ import session.UserRolesFacade;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-@WebServlet(name = "ReaderServlet", urlPatterns = {
+@WebServlet(name = "CustomerServlet", urlPatterns = {
     "/showBuyComputer",
-    "/",
-    "/",
-    "/",
-    
+    "/buyComputer"
 })
 public class CustomerServlet extends HttpServlet {
     @EJB
@@ -80,14 +76,15 @@ public class CustomerServlet extends HttpServlet {
                 List<Customer> listCustomers = customerFacade.findAll();
                 request.setAttribute("listComputers", listComputers);
                 request.setAttribute("listCustomers", listCustomers);
-                request.getRequestDispatcher("/WEB-INF/showBuyComputer.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("showBuyComputer")).forward(request, response);
                 break;
             case "/buyComputer":
+                Customer customer = user.getCustomer();
                 String computerId = request.getParameter("computerId");
-                String customerId = request.getParameter("customerId");
                 Computer computer = computerFacade.find(Long.parseLong(computerId));
-                 Customer   customer = customerFacade.find(Long.parseLong(customerId));
-                if (customer.getMoney() - computer.getPrice() >= 0) {
+                if(computer.getQuantity() >=0) {
+                 if (customer.getMoney() - computer.getPrice() >= 0) {
+                        computer.setQuantity(computer.getQuantity()-1);
                         computerFacade.edit(computer);
                         customer.setMoney(customer.getMoney() - computer.getPrice());
                         customerFacade.edit(customer);
@@ -97,9 +94,14 @@ public class CustomerServlet extends HttpServlet {
                         history.setComputergiven(new Date());
                         historyFacade.create(history);
                         request.setAttribute("info", "Компьютер куплен клиентом"+ " " + customer.getFirstname() + " " + customer.getLastname());
+                        
                     } else {
                         request.setAttribute("info", "Недостаточно средств");
                     }
+                }else{
+                     request.setAttribute("info", "Недостаточное кол-во товара");
+                }
+                 
                  request.getRequestDispatcher("/index.jsp")
                         .forward(request, response);
                 break;

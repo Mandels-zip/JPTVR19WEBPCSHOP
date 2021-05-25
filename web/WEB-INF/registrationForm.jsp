@@ -20,9 +20,10 @@
       Имя читателя <input type="text" name="firstname"><br>
       Фамилия читателя <input type="text" name="lastname"><br>
       Телефон <input type="text" name="phone"><br>
+      Эмайл <input type="text" name="email"><br>
       Логин <input type="text" name="login"><br>
       Пароль <input type="text" name="password"><br>
-      <input type="submit" name="submit" value="Добавить">
+      <input class="btn btn-dark" type="submit" name="submit" value="Добавить">
     </form>
     </body>
 </html>

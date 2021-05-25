@@ -27,7 +27,8 @@
       ССД<input type="text" name="ssd"><br>
       Блок питания<input type="text" name="power"><br>
       Цена<input type="text" name="price"><br>
-      <input type="submit" name="submit" value="Добавить">
+      Кол-во<input type="text" name="quantity"><br>
+      <input class="btn btn-dark" type="submit" name="submit" value="Добавить">
     </form>
   </body>
 </html>

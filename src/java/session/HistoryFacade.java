@@ -11,10 +11,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-/**
- *  WHERE history.Computergiven != null"
- * @author ilja2
- */
 @Stateless
 public class HistoryFacade extends AbstractFacade<History> {
 

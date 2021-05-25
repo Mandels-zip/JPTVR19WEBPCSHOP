@@ -5,6 +5,7 @@
  */
 package entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,13 +19,14 @@ import javax.persistence.OneToOne;
  * @author pupil
  */
 @Entity
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String login;
     private String password;
+    private String salt;
  
     @OneToOne
     private Customer customer;
@@ -32,10 +34,19 @@ public class User {
     public User() {
     }
 
-    public User(String login, String password, Customer customer) {
+    public User(String login, String password, Customer customer, String salt) {
         this.login = login;
         this.password = password;
         this.customer = customer;
+        this.salt = salt;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public String getLogin() {

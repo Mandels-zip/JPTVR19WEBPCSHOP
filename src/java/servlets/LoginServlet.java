@@ -5,6 +5,7 @@
  */
 package servlets;
 
+
 import entity.Computer;
 import entity.Customer;
 import entity.Role;
@@ -12,7 +13,9 @@ import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,10 +27,11 @@ import session.CustomerFacade;
 import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
+import tools.EncryptPassword;
 
 /**
  *
- * @author pupil
+ * @author jvm
  */
 @WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
     "/loginForm",
@@ -40,20 +44,24 @@ import session.UserRolesFacade;
 public class LoginServlet extends HttpServlet {
 @EJB
     private UserFacade userFacade;
-@EJB
-    private CustomerFacade customerFacade;
-@EJB
-    private ComputerFacade computerFacade;
 @EJB private RoleFacade roleFacade;
+@EJB private CustomerFacade customerFacade;
+@EJB private ComputerFacade computerFacade;
 @EJB private UserRolesFacade userRolesFacade;
 
+@Inject private EncryptPassword encryptPassword;
+
+public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
+        
     @Override
     public void init() throws ServletException {
         
        if(userFacade.findAll().size()>0) return;
-        Customer customer = new Customer("Juri", "Melnikov", "56569987", "melnikov@gmail.com", 500);
+        String salt = encryptPassword.createSalt();
+        String password = encryptPassword.createHash("12345", salt);
+        Customer customer = new Customer("Ilya", "Gurov", "56223324", "Gurov@gmail.com", 500);
         customerFacade.create(customer);
-        User user = new User("admin", "12345", customer);
+        User user = new User("admin", password,customer, salt);
         userFacade.create(user);
         Role role = new Role("ADMIN");
         roleFacade.create(role);
@@ -85,13 +93,15 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        List<Computer> listComputers = computerFacade.findAll();
+        
         String path = request.getServletPath();
         switch (path) {
             case "/loginForm":
-                request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+                request.setAttribute("activeLogin", "true");
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("login")).forward(request, response);
                 break;
             case "/login":
+                HttpSession session = request.getSession(true);
                 String login = request.getParameter("login");
                 String password = request.getParameter("password");
                 if("".equals(login) || login == null
@@ -106,10 +116,19 @@ public class LoginServlet extends HttpServlet {
                     request.getRequestDispatcher("/loginForm").forward(request, response);
                     break;
                 }
-                HttpSession session = request.getSession(true);
-                session.setAttribute("user", user);
-                request.setAttribute("info","Вы вошли как "+ user.getLogin());
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                String salt = user.getSalt();
+                String encryptPwd = encryptPassword.createHash(password, salt);
+                 if(user.getPassword().equals(encryptPwd)){
+                    session = request.getSession(true);
+                    session.setAttribute("user", user);
+                    request.setAttribute("info","Вы вошли как "+ user.getLogin());
+                    request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);   
+                } else {
+                    request.setAttribute("info","Неверный пароль!");
+                    request.getRequestDispatcher("/loginForm").forward(request, response);
+                    break;
+                }
+                
                 break;
             case "/logout":
                 session = request.getSession(false);
@@ -117,22 +136,24 @@ public class LoginServlet extends HttpServlet {
                    session.invalidate();
                 }
                 request.setAttribute("info", "Вы вышли");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/registrationForm":
-                request.getRequestDispatcher("/WEB-INF/registrationForm.jsp").forward(request, response);
+                request.setAttribute("activeRegistration", "true");
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("registration")).forward(request, response);
                 break;
             case "/createUser":
                 String firstname = request.getParameter("firstname");
                 String lastname = request.getParameter("lastname");
                 String phone = request.getParameter("phone");
                 String email = request.getParameter("email");
-                int money = Integer.parseInt(request.getParameter("money"));
+                String money = request.getParameter("money");
                 login = request.getParameter("login");
                 password = request.getParameter("password");
                 if("".equals(firstname) || firstname == null
                        || "".equals(lastname) || lastname == null
                        || "".equals(phone) || phone == null
+                       || "".equals(email) || email == null
                        || "".equals(login) || login == null
                        || "".equals(password) || password == null){
                     request.setAttribute("info","Заполните все поля");
@@ -140,22 +161,26 @@ public class LoginServlet extends HttpServlet {
                     break;
                 }
                 
-                Customer customer = new Customer(firstname, lastname, phone, email, money);
+                Customer customer = new Customer(firstname, lastname, phone, email, 1500);
                 customerFacade.create(customer);
-                user = new User(login, password, customer);
+                salt = encryptPassword.createSalt();
+                encryptPwd = encryptPassword.createHash(password, salt);
+                user = new User(login, encryptPwd, customer,salt);
                 userFacade.create(user);
                 //Здесь добавим роль пользователю.
-                Role roleReader = roleFacade.findByName("CUSTOMER");
-                UserRoles userRoles = new UserRoles(user, roleReader);
+                Role roleCustomer = roleFacade.findByName("CUSTOMER");
+                UserRoles userRoles = new UserRoles(user, roleCustomer);
                 userRolesFacade.create(userRoles);
                 request.setAttribute("info", 
                         "Читатель "+user.getLogin()+" добавлен"     
                 );
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
-                break; 
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
+                break;  
             case "/listComputers":
+                request.setAttribute("activeListComputers", "true");
+                List<Computer> listComputers = computerFacade.findAll();
                 request.setAttribute("listComputers", listComputers);
-                request.getRequestDispatcher("/WEB-INF/listComputers.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("listComputers")).forward(request, response);
                 break;    
         }
     }
@@ -198,5 +223,6 @@ public class LoginServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 
 }

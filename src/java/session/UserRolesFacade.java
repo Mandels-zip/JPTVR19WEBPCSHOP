@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package session;
 
+import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.util.List;
@@ -15,10 +11,11 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author pupil
+ * @author jvm
  */
 @Stateless
 public class UserRolesFacade extends AbstractFacade<UserRoles> {
+    
     @PersistenceContext(unitName = "JPTVR19WEBPCPU")
     private EntityManager em;
     
@@ -46,6 +43,7 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
     }
 
     public String getTopRoleForUser(User user) {
+        if(user == null) return "";
         List<UserRoles> listUserRoles = em.createQuery("SELECT userRoles FROM UserRoles userRoles WHERE userRoles.user = :user")
                 .setParameter("user", user)
                 .getResultList();
@@ -64,7 +62,7 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
                 return "CUSTOMER";
             }
         }
-        return "-";
+        return "";
     }
 
     public void setNewRole(UserRoles userRoles) {
@@ -86,10 +84,17 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
             ur = new UserRoles(userRoles.getUser(),roleFacade.findByName("CUSTOMER"));
             this.create(ur);
         }
-        if("READER".equals(userRoles.getRole().getRoleName())){
+        if("CUSTOMER".equals(userRoles.getRole().getRoleName())){
             ur = new UserRoles(userRoles.getUser(),roleFacade.findByName("CUSTOMER"));
             this.create(ur);
         }
     }
-   
+
+    public List<String> findRoles(User user) {
+         return em.createQuery("SELECT ur.role.roleName FROM UserRoles ur WHERE ur.user = :user")
+                .setParameter("user", user)
+                .getResultList();
+         
+    }
+    
 }

@@ -33,7 +33,7 @@ import session.UserRolesFacade;
  */
 @WebServlet(name = "AdminServlet", urlPatterns = {
     "/listCustomers",
-    "/adminForm",
+    "/adminPanel",
     "/setRole",
 })
 public class AdminServlet extends HttpServlet {
@@ -76,18 +76,18 @@ public class AdminServlet extends HttpServlet {
             case "/listCustomers":
                 List<Customer> listCustomers = customerFacade.findAll();
                 request.setAttribute("listCustomers", listCustomers);
-                request.getRequestDispatcher("/WEB-INF/admin/listCustomers.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("listCustomers")).forward(request, response);
                 break;
-            case "/adminForm":
+            case "/adminPanel":
                 List<Role> listRoles = roleFacade.findAll();
                 request.setAttribute("listRoles", listRoles);
                 Map<User,String> usersMap = new HashMap<>();
                 List<User> listUsers = userFacade.findAll();
-                for(User u : listUsers){
-                    usersMap.put(u, userRolesFacade.getTopRoleForUser(u));
+                for(int i = 0; i < listUsers.size(); i++){
+                    usersMap.put(listUsers.get(i), userRolesFacade.getTopRoleForUser(listUsers.get(i)));
                 }
                 request.setAttribute("usersMap", usersMap);
-                request.getRequestDispatcher("/WEB-INF/admin/adminPanel.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("adminPanel")).forward(request, response);
                 break;
             case "/setRole":
                 String userId = request.getParameter("userId");
@@ -97,7 +97,7 @@ public class AdminServlet extends HttpServlet {
                     request.setAttribute("userId", userId);
                     request.setAttribute("roleId", roleId);
                     request.setAttribute("info", "Заполните все поля");
-                    request.getRequestDispatcher("/adminForm").forward(request, response);
+                    request.getRequestDispatcher("/adminPanel").forward(request, response);
                     break;
                 }
                 user = userFacade.find(Long.parseLong(userId));
@@ -111,7 +111,7 @@ public class AdminServlet extends HttpServlet {
                     request.setAttribute("roleId", roleId);
                     request.setAttribute("info", "Изменить роль невозможно");
                 }
-                request.getRequestDispatcher("/adminForm").forward(request, response);
+                request.getRequestDispatcher("/adminPanel").forward(request, response);
                 break;
         }
     }
