@@ -13,7 +13,7 @@
     </head>
     <body>
         <h2 class="text-decoration-underline" >Введите логин и пароль</h2>
-    <a href="index.jsp"  class="text-decoration-none" >Главная страница</a>
+    <a href="index.jsp"  class="text-decoration-none" style = "color: #006666" >Главная страница</a>
     <form action="login" method="POST">
         Логин: <input type="text" name="login" id="login" value="${login}">
         <br>

@@ -12,12 +12,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author pupil
  */
 @Entity
+@XmlRootElement
 public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +43,22 @@ public class Customer implements Serializable {
         this.money = money;
     }
 
+     public Customer(String firstname, String lastname, String phone, String email, double money) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+        this.email = email;
+        this.setMoney(money);
+    }
+    
+     public Customer(String firstname, String lastname, String phone, String email, String money) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+        this.email = email;
+        this.setMoney(money);
+    }
+     
     public Long getId() {
         return id;
     }
@@ -138,9 +156,32 @@ public class Customer implements Serializable {
         }
         return true;
     }
-
     
+
+        public String getMoneyStr() {
+            Double dMoney = (double)this.money/100;
+            return dMoney.toString();
+        }
+        public double getMoneyDouble() {
+            return (double)this.money/100;
+        }
+
+        
+        public void setMoney(String money) throws NumberFormatException {
+            money = money.trim().replaceAll(",", ".");
+            try {
+                double dMoney = Double.parseDouble(money);
+                this.money = (int)(dMoney * 100);
+            } catch (NumberFormatException e) {
+                throw new NumberFormatException("Неправильный формат числа");
+            }
+        }
+        public void setMoney(double money) {
+            this.money = (int)(money * 100);
+        }
+
     }
+
 
     
 

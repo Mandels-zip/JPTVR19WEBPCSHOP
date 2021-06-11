@@ -16,20 +16,23 @@
         <table class="table table-striped">
     <thead>
     <tr>
+      
       <th scope="col">Имя</th>
       <th scope="col">фамилия</th>
       <th scope="col">Э-майл</th>
       <th scope="col">Телефон</th>
       <th scope="col">Счет</th>
     </tr>
-     <c:forEach var="сustomer" items="${listCustomers}">
+     <c:forEach var="сustomer" items="${listCustomers}" varStatus="status">
        <tbody>
     <tr>
+      
       <td>${сustomer.firstname}</td>
       <td>${сustomer.lastname}</td>
       <td>${сustomer.email}</td>
       <td>${сustomer.phone}</td>
       <td>${сustomer.money}</td>
+      
        </c:forEach>
     </tr>
   </thead>

@@ -113,6 +113,45 @@ public class AdminServlet extends HttpServlet {
                 }
                 request.getRequestDispatcher("/adminPanel").forward(request, response);
                 break;
+            case  "/editUser":
+                userId = request.getParameter("userId");
+                User editUser = userFacade.find(Long.parseLong(userId));
+                request.setAttribute("user", editUser);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("editUserForm")).forward(request, response);
+                break;
+            case "/changeUser":
+                userId = request.getParameter("userId");
+                User pUser = userFacade.find(Long.parseLong(userId));
+                if("admin".equals(pUser.getLogin()) && !"admin".equals(user.getLogin())){
+                    request.setAttribute("info", "Вы не имеете прав на изменение данных этого пользователя");
+                    request.getRequestDispatcher("/editUser").forward(request, response);
+                    break;
+                }
+                Customer pCustomer = customerFacade.find(pUser.getCustomer().getId());
+                String firstname = request.getParameter("firstname");
+                if(pCustomer != null && !"".equals(firstname)) pCustomer.setFirstname(firstname);
+                String lastname = request.getParameter("lastname");
+                if(pCustomer != null && !"".equals(lastname)) pCustomer.setLastname(lastname);
+                String phone = request.getParameter("phone");
+                if(pCustomer != null && !"".equals(phone)) pCustomer.setPhone(phone);
+                String money = request.getParameter("money");
+                if(pCustomer != null && !"". equals(money)) pCustomer.setMoney(money);
+//                String login = request.getParameter("login");
+//                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
+                String password = request.getParameter("password");
+                if(pUser != null && !"".equals(password)){
+                    //здесь шифруем пароль и получаем соль
+                    pUser.setPassword(password);
+                    //user.setSalt(salt);
+                    
+                }
+                customerFacade.edit(pCustomer);
+                pUser.setCustomer(pCustomer);
+                userFacade.edit(pUser);
+                request.setAttribute("user", pUser);
+                request.setAttribute("info", "Данные пользователя изменены");
+                request.getRequestDispatcher("/editUser").forward(request, response);
+                break;
         }
     }
     

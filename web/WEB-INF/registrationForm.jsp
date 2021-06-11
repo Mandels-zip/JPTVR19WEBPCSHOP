@@ -15,7 +15,7 @@
         <h1>Добавить читателя</h1>
     <p>${info}</p>
     <br>
-    <a href="index.jsp">Главная страница</a>
+    <a href="index.jsp" class="text-decoration-none"  style = "color: #006666">Главная страница</a>
     <form action="createUser" method="POST">
       Имя читателя <input type="text" name="firstname"><br>
       Фамилия читателя <input type="text" name="lastname"><br>

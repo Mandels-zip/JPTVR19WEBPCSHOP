@@ -15,7 +15,7 @@
     <h1>Добавить новый ПК</h1>
     <p>${info}</p>
     <br>
-    <a href="index.jsp">Главная страница</a>
+    <a href="index.jsp" class="text-decoration-none"  color ="#006666">Главная страница</a>
     <form action="createComputer" method="POST">
       Производитель <input type="text" name="manufacturer"><br>
       Модель <input type="text" name="model"><br>

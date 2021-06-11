@@ -69,7 +69,7 @@ public class User implements Serializable {
         return customer;
     }
 
-    public void setCusomer(Customer customer) {
+    public void setCustomer(Customer customer) {
         this.customer = customer;
     }
 
